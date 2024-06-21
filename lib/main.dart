@@ -203,15 +203,14 @@ class homePage extends StatelessWidget {
                  size: 36.0,
                ),
                //写真要素代わりに、アイコンを挿入
-        const Text("藤本伊織"),//ここをDBから取得したい
-        const Text("ステータス文"),//ここをDBから取得したい
+        const Text("藤本伊織"),
+        const Text("ステータス文"),
         Icon(
                  Icons.favorite,
                  color: Colors.pink,
                  size: 24.0,
                ),
                //暇ステータス代わり
-               
              ]),
        ])
     );
