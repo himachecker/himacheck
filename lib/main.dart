@@ -189,6 +189,31 @@ class homePage extends StatelessWidget {
           );
         },
       ),
+      body: Column(children: [
+      TextButton(
+       onPressed: () => {print("ボタンが押されたよ")},
+       child: const Text("テキストボタン"),
+      ),
+      const Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+        Icon(
+                 Icons.beach_access,
+                 color: Colors.blue,
+                 size: 36.0,
+               ),
+               //写真要素代わりに、アイコンを挿入
+        const Text("藤本伊織"),//ここをDBから取得したい
+        const Text("ステータス文"),//ここをDBから取得したい
+        Icon(
+                 Icons.favorite,
+                 color: Colors.pink,
+                 size: 24.0,
+               ),
+               //暇ステータス代わり
+               
+             ]),
+       ])
     );
   }
 }
