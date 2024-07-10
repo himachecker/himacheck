@@ -33,6 +33,19 @@ class FirestoreService {
       'timestamp': timestamp,
     });
   }
+  
+  Future<void> addFriend(String userId, String friendId) async {
+    await _db.collection('users').doc(userId).collection('friends').doc(friendId).set({});
+  }
+
+  Stream<List<String>> getFriendIds(String userId) {
+    return _db
+        .collection('users')
+        .doc(userId)
+        .collection('friends')
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.id).toList());
+  }
  
   Stream<List<Status>> getFriendsStatuses(String userId) {
     return _db

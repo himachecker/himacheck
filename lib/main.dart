@@ -6,6 +6,7 @@ import 'package:himacheck/timeago.dart';
 import 'firebase_options.dart';
 import 'status.dart';
 import 'firestore_service.dart';
+import 'package:himacheck/add_friend_page.dart';
 import 'package:timeago/timeago.dart' as timeAgo;
 
 
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
 }
 
 // HomePageクラスの修正
+// home画面用Widget
 class HomePage extends StatelessWidget {
   final FirestoreService firestoreService = FirestoreService();
   final AuthService authService = AuthService();
@@ -64,11 +66,18 @@ class HomePage extends StatelessWidget {
               );
             },
           ),
+          IconButton(
+            icon: Icon(Icons.person_add),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => AddFriendPage(),
+              ));
+            },
+          ),
         ],
       ),
       body: Column(
         children: [
-          // ユーザーのステータスを表示
           StreamBuilder<Status?>(
             stream: firestoreService.getUserStatus(user.uid),
             builder: (context, snapshot) {
@@ -98,7 +107,7 @@ class HomePage extends StatelessWidget {
                             value,
                             status.message,
                             status.name,
-                            status.timestamp,
+                            status.timestamp
                           );
                         } catch (e) {
                           print('Error updating status: $e');
@@ -124,7 +133,6 @@ class HomePage extends StatelessWidget {
               );
             },
           ),
-          // フレンドリストを表示
           Expanded(
             child: StreamBuilder<List<Status>>(
               stream: firestoreService.getFriendsStatuses(user.uid),
