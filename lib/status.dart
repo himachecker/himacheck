@@ -1,5 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// status.dart
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Status {
   final String id;
@@ -8,17 +9,32 @@ class Status {
   final String name;
   final DateTime timestamp;
 
+  Status({
+    required this.id,
+    required this.message,
+    required this.isActive,
+    required this.name,
+    required this.timestamp,
+  });
 
-
-  Status({required this.id, required this.name, required this.message, required this.isActive, required this.timestamp});
-
-  factory Status.fromMap(Map<String, dynamic> data, String id) {
+  factory Status.fromFirestore(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return Status(
-      id: id,
+      id: doc.id,
       message: data['message'] ?? '',
       isActive: data['isActive'] ?? false,
-      name: data["name"] ?? '',
-      timestamp: (data['timestamp'] as Timestamp).toDate(),      
+      name: data['name'] ?? '',
+      timestamp: (data['timestamp'] as Timestamp).toDate(),
+    );
+  }
+
+  factory Status.fromMap(Map<String, dynamic> data, String documentId) {
+    return Status(
+      id: documentId,
+      message: data['message'] ?? '',
+      isActive: data['isActive'] ?? false,
+      name: data['name'] ?? '',
+      timestamp: (data['timestamp'] as Timestamp).toDate(),
     );
   }
 
@@ -27,7 +43,7 @@ class Status {
       'message': message,
       'isActive': isActive,
       'name': name,
-      'timestamp' : timestamp
+      'timestamp': Timestamp.fromDate(timestamp),
     };
   }
 }
