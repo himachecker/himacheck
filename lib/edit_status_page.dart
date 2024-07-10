@@ -1,15 +1,22 @@
+// edit_status_page.dart
+
 import 'package:flutter/material.dart';
 import 'firestore_service.dart';
+import 'auth.dart';
 
 class EditStatusPage extends StatefulWidget {
   final String documentId;
   final String currentMessage;
   final bool currentStatus;
+  final String currentname;
+  final DateTime currenttimestamp;
 
   EditStatusPage({
     required this.documentId,
     required this.currentMessage,
     required this.currentStatus,
+    required this.currentname,
+    required this.currenttimestamp,
   });
 
   @override
@@ -18,59 +25,79 @@ class EditStatusPage extends StatefulWidget {
 
 class _EditStatusPageState extends State<EditStatusPage> {
   final FirestoreService firestoreService = FirestoreService();
-  final TextEditingController _messageController = TextEditingController();
+  final AuthService authService = AuthService();
 
-  bool _isActive = false;
+  late TextEditingController messageController;
+  late bool isActive;
+  late DateTime timestamp;
 
   @override
   void initState() {
     super.initState();
-    _messageController.text = widget.currentMessage;
-    _isActive = widget.currentStatus;
+    messageController = TextEditingController(text: widget.currentMessage);
+    isActive = widget.currentStatus;
+    timestamp = widget.currenttimestamp;
+  }
+
+  @override
+  void dispose() {
+    messageController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final user = authService.getCurrentUser();
+
+    if (user == null) {
+      return Scaffold(
+        body: Center(child: Text('User not logged in')),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Status'),
+        title: Text('ステータスの編集'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
             TextField(
-              controller: _messageController,
-              decoration: InputDecoration(labelText: 'Message'),
-            ),
-            SwitchListTile(
-              title: Text('Active'),
-              value: _isActive,
-              onChanged: (bool value) {
+              controller: messageController,
+              decoration: InputDecoration(labelText: 'メッセージ'),
+              onChanged: (value) {
                 setState(() {
-                  _isActive = value;
+                  // Controllerが入力を管理しているので、この部分は不要かもしれません。
                 });
               },
             ),
+            SwitchListTile(
+              title: Text('アクティブ'),
+              value: isActive,
+              onChanged: (value) {
+                setState(() {
+                  isActive = value;
+                });
+              },
+            ),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                if (widget.documentId.isEmpty) {
-                  // 新しいドキュメントを作成
-                  await firestoreService.addStatus(
-                    _messageController.text,
-                    _isActive,
-                  );
-                } else {
-                  // 既存のドキュメントを更新
+                try {
                   await firestoreService.updateStatus(
-                    widget.documentId,
-                    _isActive,
-                    _messageController.text,
+                    user.uid,
+                    isActive,
+                    messageController.text,
+                    widget.currentname,
+                    timestamp
                   );
+                  Navigator.of(context).pop();
+                } catch (e) {
+                  print('Error updating status: $e');
                 }
-                Navigator.of(context).pop();
               },
-              child: Text('Update'),
+              child: Text('更新'),
             ),
           ],
         ),

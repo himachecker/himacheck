@@ -1,6 +1,39 @@
+// auth.dart
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'firestore_service.dart';
 import 'main.dart';
+
+class AuthService {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  User? getCurrentUser() {
+    return _auth.currentUser;
+  }
+
+  Future<void> signOut() async {
+    await _auth.signOut();
+  }
+
+  Future<void> registerUser(String email, String password, String name) async {
+    final UserCredential result = await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    final User user = result.user!;
+    final FirestoreService firestoreService = FirestoreService();
+
+    // ステータスを自動生成
+    await firestoreService.addStatus(
+      "はじめまして",
+      true,
+      name,
+      DateTime.now(),
+      user.uid,
+    );
+  }
+}
 
 class MyAuthPage extends StatefulWidget {
   @override
@@ -8,26 +41,32 @@ class MyAuthPage extends StatefulWidget {
 }
 
 class _MyAuthPageState extends State<MyAuthPage> {
-  // 入力されたメールアドレス
   String newUserEmail = "";
-  // 入力されたパスワード
+  String newUserName = ""; // 追加: ユーザー名
   String newUserPassword = "";
-  // 入力されたメールアドレス（ログイン）
   String loginUserEmail = "";
-  // 入力されたパスワード（ログイン）
   String loginUserPassword = "";
-  // 登録・ログインに関する情報を表示
   String infoText = "";
 
   @override
   Widget build(BuildContext context) {
+    final AuthService authService = AuthService();
+
     return Scaffold(
       body: Center(
         child: Container(
           padding: EdgeInsets.all(32),
           child: Column(
             children: <Widget>[
-              TextFormField(  // テキスト入力のラベルを設定
+              TextFormField(
+                decoration: InputDecoration(labelText: "ユーザー名"), // 追加: ユーザー名入力フィールド
+                onChanged: (String value) {
+                  setState(() {
+                    newUserName = value;
+                  });
+                },
+              ),
+              TextFormField(
                 decoration: InputDecoration(labelText: "メールアドレス"),
                 onChanged: (String value) {
                   setState(() {
@@ -35,41 +74,31 @@ class _MyAuthPageState extends State<MyAuthPage> {
                   });
                 },
               ),
-              TextFormField(  
+              TextFormField(
                 decoration: InputDecoration(labelText: "パスワード（６文字以上）"),
-                // パスワードが見えないようにする
                 obscureText: true,
                 onChanged: (String value) {
                   setState(() {
                     newUserPassword = value;
                   });
-                }, 
+                },
               ),
-              ElevatedButton( 
-                 onPressed: () async {
+              ElevatedButton(
+                onPressed: () async {
                   try {
-                    // メール/パスワードでユーザー登録
-                    final FirebaseAuth auth = FirebaseAuth.instance;
-                    final UserCredential result =
-                        await auth.createUserWithEmailAndPassword(
-                      email: newUserEmail,
-                      password: newUserPassword,
-                    );
-
-                    // 登録したユーザー情報
-                    final User user = result.user!;
+                    await authService.registerUser(newUserEmail, newUserPassword, newUserName);
+                    final User? user = authService.getCurrentUser();
                     setState(() {
-                      infoText = "登録OK：${user.email}";
+                      infoText = "登録OK：${user?.email}";
                     });
                   } catch (e) {
-                    // 登録に失敗した場合
                     setState(() {
                       infoText = "登録NG：${e.toString()}";
                     });
                   }
                 },
                 child: Text("ユーザー登録"),
-              ),    
+              ),
               const SizedBox(height: 32),
               TextFormField(
                 decoration: InputDecoration(labelText: "メールアドレス"),
@@ -92,14 +121,10 @@ class _MyAuthPageState extends State<MyAuthPage> {
               ElevatedButton(
                 onPressed: () async {
                   try {
-                    // メール/パスワードでログイン
-                    final FirebaseAuth auth = FirebaseAuth.instance;
-                    final UserCredential result =
-                        await auth.signInWithEmailAndPassword(
+                    final UserCredential result = await authService._auth.signInWithEmailAndPassword(
                       email: loginUserEmail,
                       password: loginUserPassword,
                     );
-                    // ログインに成功した場合
                     final User user = result.user!;
                     setState(() {
                       infoText = "ログインOK：${user.email}";
@@ -110,7 +135,6 @@ class _MyAuthPageState extends State<MyAuthPage> {
                       }),
                     );
                   } catch (e) {
-                    // ログインに失敗した場合
                     setState(() {
                       infoText = "ログインNG：${e.toString()}";
                     });
