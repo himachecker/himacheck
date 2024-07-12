@@ -154,7 +154,16 @@ class HomePage extends StatelessWidget {
                     return ListTile(
                       title: Text(status.name),
                       subtitle: Text(status.message),
-                      trailing: Text(createTimeAgoString(status.timestamp)),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(createTimeAgoString(status.timestamp)),
+                          Icon(
+                            status.isActive ? Icons.check_circle : Icons.cancel,
+                            color: status.isActive ? Colors.green : Colors.red,
+                          ),
+                        ],
+                      ),
                     );
                   },
                 );
