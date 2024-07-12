@@ -1,11 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:himacheck/edit_status_page.dart';
-import 'package:himacheck/auth.dart';
-import 'package:himacheck/timeago.dart';
-import 'firebase_options.dart';
-import 'status.dart';
-import 'firestore_service.dart';
+import 'package:himacheck/auth/auth.dart';
+import 'package:himacheck/script/timeago.dart';
+import 'script/firebase_options.dart';
+import 'models/status.dart';
+import 'script/firestore_service.dart';
 import 'package:himacheck/add_friend_page.dart';
 import 'package:timeago/timeago.dart' as timeAgo;
 

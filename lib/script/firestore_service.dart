@@ -1,7 +1,7 @@
 // firestore_service.dart
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'status.dart';
+import '../models/status.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;

@@ -1,8 +1,8 @@
 // edit_status_page.dart
 
 import 'package:flutter/material.dart';
-import 'firestore_service.dart';
-import 'auth.dart';
+import 'script/firestore_service.dart';
+import 'auth/auth.dart';
 
 class EditStatusPage extends StatefulWidget {
   final String documentId;

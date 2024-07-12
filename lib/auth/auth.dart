@@ -2,8 +2,8 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'firestore_service.dart';
-import 'main.dart';
+import '../script/firestore_service.dart';
+import '../main.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
