@@ -47,3 +47,31 @@ class Status {
     };
   }
 }
+
+class Team {
+  final String id;
+  final String name;
+
+  Team({required this.id, required this.name});
+
+  factory Team.fromFirestore(Map<String, dynamic> data) {
+    return Team(
+      id: data['id'] ?? '',
+      name: data['name'] ?? '',
+    );
+  }
+}
+
+class Friend {
+  final String id;
+  final String name;
+
+  Friend({required this.id, required this.name});
+
+  factory Friend.fromFirestore(Map<String, dynamic> data) {
+    return Friend(
+      id: data['id'] ?? '',
+      name: data['name'] ?? '',
+    );
+  }
+}

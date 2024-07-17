@@ -68,4 +68,88 @@ class FirestoreService {
           }
         });
   }
+    Stream<List<Team>> getUserTeams(String uid) {
+    return _db
+        .collection('users')
+        .doc(uid)
+        .collection('teams')
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => Team.fromFirestore(doc.data() as Map<String, dynamic>))
+            .toList());
+  }
+
+
+  Stream<List<Friend>> getTeamMembers(String uid, String teamId) {
+    return _db
+        .collection('users')
+        .doc(uid)
+        .collection('teams')
+        .doc(teamId)
+        .collection('members')
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => Friend.fromFirestore(doc.data() as Map<String, dynamic>))
+            .toList());
+  }
+
+  Stream<List<Friend>> getUserFriends(String uid) {
+    return _db
+        .collection('users')
+        .doc(uid)
+        .collection('friends')
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => Friend.fromFirestore(doc.data() as Map<String, dynamic>))
+            .toList());
+  }
+
+  Future<void> createTeam(String uid, String teamName) async {
+    await _db.collection('users').doc(uid).collection('teams').doc().set({
+        'name': teamName,
+        'id': uid});
+  }
+
+
+  Future<void> updateTeam(String uid, String teamId, String teamName) async {
+    await _db
+        .collection('users')
+        .doc(uid)
+        .collection('teams')
+        .doc(teamId)
+        .update({'name': teamName});
+  }
+
+  Future<void> deleteTeam(String uid, String teamId) async {
+    await _db
+        .collection('users')
+        .doc(uid)
+        .collection('teams')
+        .doc(teamId)
+        .delete();
+  }
+
+  Future<void> addFriendToTeam(String uid, String teamId, String friendId) async {
+    final friendDoc = _db
+        .collection('users')
+        .doc(uid)
+        .collection('teams')
+        .doc(teamId)
+        .collection('members')
+        .doc(friendId);
+    await friendDoc.set({'id': friendId});
+  }
+
+  Future<void> removeFriendFromTeam(String uid, String teamId, String friendId) async {
+    await _db
+        .collection('users')
+        .doc(uid)
+        .collection('teams')
+        .doc(teamId)
+        .collection('members')
+        .doc(friendId)
+        .delete();
+  }
 }
+
+
