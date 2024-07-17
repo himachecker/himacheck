@@ -60,4 +60,5 @@ class DefaultFirebaseOptions {
     authDomain: 'himacheck-cojtsw2024.firebaseapp.com',
     storageBucket: 'himacheck-cojtsw2024.appspot.com',
   );
+
 }

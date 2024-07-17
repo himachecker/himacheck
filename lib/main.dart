@@ -1,13 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:himacheck/edit_status_page.dart';
-import 'package:himacheck/auth.dart';
-import 'package:himacheck/timeago.dart';
-import 'firebase_options.dart';
-import 'status.dart';
-import 'firestore_service.dart';
+import 'package:himacheck/auth/auth.dart';
+import 'package:himacheck/script/timeago.dart';
+import 'script/firebase_options.dart';
+import 'models/status.dart';
+import 'script/firestore_service.dart';
 import 'package:himacheck/add_friend_page.dart';
 import 'package:timeago/timeago.dart' as timeAgo;
+
 
 
 // home画面用Widget
@@ -67,6 +68,14 @@ class HomePage extends StatelessWidget {
             },
           ),
           IconButton(
+            icon: Icon(Icons.group),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => TeamManagementPage(),
+              ));
+            },
+          ),
+          IconButton(
             icon: Icon(Icons.person_add),
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
@@ -78,6 +87,7 @@ class HomePage extends StatelessWidget {
       ),
       body: Column(
         children: [
+          // 現在のユーザーステータス表示部分
           StreamBuilder<Status?>(
             stream: firestoreService.getUserStatus(user.uid),
             builder: (context, snapshot) {
@@ -107,7 +117,7 @@ class HomePage extends StatelessWidget {
                             value,
                             status.message,
                             status.name,
-                            status.timestamp
+                            status.timestamp,
                           );
                         } catch (e) {
                           print('Error updating status: $e');
@@ -133,6 +143,7 @@ class HomePage extends StatelessWidget {
               );
             },
           ),
+          // 友達リスト表示部分
           Expanded(
             child: StreamBuilder<List<Status>>(
               stream: firestoreService.getFriendsStatuses(user.uid),
@@ -154,7 +165,16 @@ class HomePage extends StatelessWidget {
                     return ListTile(
                       title: Text(status.name),
                       subtitle: Text(status.message),
-                      trailing: Text(createTimeAgoString(status.timestamp)),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(createTimeAgoString(status.timestamp)),
+                          Icon(
+                            status.isActive ? Icons.check_circle : Icons.cancel,
+                            color: status.isActive ? Colors.green : Colors.red,
+                          ),
+                        ],
+                      ),
                     );
                   },
                 );
@@ -162,6 +182,23 @@ class HomePage extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// TeamManagementPageクラスの作成
+class TeamManagementPage extends StatelessWidget {
+  final FirestoreService firestoreService = FirestoreService();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('チーム管理'),
+      ),
+      body: Center(
+        child: Text('ここにチーム管理機能を実装します'),
       ),
     );
   }
