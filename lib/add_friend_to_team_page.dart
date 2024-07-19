@@ -41,7 +41,7 @@ class AddFriendToTeamPage extends StatelessWidget {
               final friend = friends[index];
               return ListTile(
                 title: Text(friend.name),
-                onTap: () {
+                onTap: () {//userId, team.id, friend.idが空欄でないのが問題となっています。
                   firestoreService.addFriendToTeam(userId, team.id, friend.id).then(
                     (_) {
                       Navigator.of(context).pop(); // チーム追加後にページを戻す
