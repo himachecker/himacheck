@@ -5,6 +5,7 @@ import '../models/status.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+  
 
   Stream<Status?> getUserStatus(String uid) {
     return _db.collection('statuses').doc(uid).snapshots().map((snapshot) {
@@ -81,27 +82,32 @@ class FirestoreService {
 
 
   Stream<List<Friend>> getTeamMembers(String uid, String teamId) {
-    return _db
-        .collection('users')
-        .doc(uid)
-        .collection('teams')
-        .doc(teamId)
-        .collection('members')
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Friend.fromFirestore(doc.data() as Map<String, dynamic>))
-            .toList());
-  }
+  return _db
+      .collection('users')
+      .doc(uid)
+      .collection('teams')
+      .doc(teamId)
+      .collection('members')
+      .snapshots()
+      .map((snapshot) => snapshot.docs
+          .map((doc) => Friend.fromFirestore(doc.data() as Map<String, dynamic>))
+          .toList());
+}
 
-  Stream<List<Friend>> getUserFriends(String uid) {
-    return _db
-        .collection('users')
-        .doc(uid)
-        .collection('friends')
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Friend.fromFirestore(doc.data() as Map<String, dynamic>))
-            .toList());
+  Future<List<Friend>> getUserFriends(String uid) async {
+    try {
+      QuerySnapshot snapshot = await _db
+          .collection('users')
+          .doc(uid)
+          .collection('friends')
+          .get();
+      return snapshot.docs
+          .map((doc) => Friend.fromFirestore(doc.data() as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      print('Error getting friends: $e');
+      return [];
+    }
   }
 
   Future<void> createTeam(String uid, String teamName) async {
@@ -129,15 +135,16 @@ class FirestoreService {
         .delete();
   }
 
+
   Future<void> addFriendToTeam(String uid, String teamId, String friendId) async {
-    final friendDoc = _db
-        .collection('users')
-        .doc(uid)
-        .collection('teams')
-        .doc(teamId)
-        .collection('members')
-        .doc(friendId);
-    await friendDoc.set({'id': friendId});
+    try {
+      DocumentReference teamRef = _db.collection('users').doc(uid).collection('teams').doc(teamId);
+      await teamRef.update({
+        'members': FieldValue.arrayUnion([friendId])
+      });
+    } catch (e) {
+      print('Error adding friend to team: $e');
+    }
   }
 
   Future<void> removeFriendFromTeam(String uid, String teamId, String friendId) async {
@@ -150,6 +157,22 @@ class FirestoreService {
         .doc(friendId)
         .delete();
   }
+
+  Future<List<String>> getTeamIds(String userId) async {
+  try {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('teams')
+        .get();
+
+    return querySnapshot.docs.map((doc) => doc.id).toList();
+  } catch (e) {
+    print('Error fetching team IDs: $e');
+    return [];
+  }
+  }
+
 }
 
 

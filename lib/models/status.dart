@@ -70,8 +70,12 @@ class Friend {
 
   factory Friend.fromFirestore(Map<String, dynamic> data) {
     return Friend(
-      id: data['id'] ?? '',
-      name: data['name'] ?? '',
+      id: data['id'],
+      name: data['name'],
     );
   }
+
+  get teamID => null;
+
+  get userID => null;
 }

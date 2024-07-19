@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:himacheck/edit_status_page.dart';
 import 'package:himacheck/auth/auth.dart';
+import 'package:himacheck/edit_team_page.dart';
 import 'package:himacheck/script/timeago.dart';
 import 'script/firebase_options.dart';
 import 'models/status.dart';
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'StatusApp',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -45,6 +47,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = authService.getCurrentUser();
+    final Team teams;
 
     if (user == null) {
       return Scaffold(
@@ -71,7 +74,7 @@ class HomePage extends StatelessWidget {
             icon: Icon(Icons.group),
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => TeamManagementPage(),
+                builder: (context) => TeamManagementPage(team: firestoreService.getTeamIds(userId))
               ));
             },
           ),
@@ -187,19 +190,3 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// TeamManagementPageクラスの作成
-class TeamManagementPage extends StatelessWidget {
-  final FirestoreService firestoreService = FirestoreService();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('チーム管理'),
-      ),
-      body: Center(
-        child: Text('ここにチーム管理機能を実装します'),
-      ),
-    );
-  }
-}
