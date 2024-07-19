@@ -130,6 +130,10 @@ class FirestoreService {
   }
 
   Future<void> addFriendToTeam(String uid, String teamId, String friendId) async {
+    if (uid.isEmpty || teamId.isEmpty || friendId.isEmpty) {
+      throw ArgumentError('User ID, Team ID, and Friend ID must not be empty');
+    }
+
     final friendDoc = _db
         .collection('users')
         .doc(uid)

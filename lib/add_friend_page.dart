@@ -14,6 +14,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
   final AuthService authService = AuthService();
   final TextEditingController friendIdController = TextEditingController();
 
+
   @override
   Widget build(BuildContext context) {
     final user = authService.getCurrentUser();
