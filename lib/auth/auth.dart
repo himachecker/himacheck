@@ -79,6 +79,7 @@ class _MyAuthPageState extends State<MyAuthPage> {
     final AuthService authService = AuthService();
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
         child: Container(
           padding: EdgeInsets.all(32),
@@ -182,3 +183,4 @@ class _MyAuthPageState extends State<MyAuthPage> {
     );
   }
 }
+

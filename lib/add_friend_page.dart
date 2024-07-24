@@ -20,11 +20,13 @@ class _AddFriendPageState extends State<AddFriendPage> {
 
     if (user == null) {
       return Scaffold(
+        backgroundColor: Colors.white,
         body: Center(child: Text('User not logged in')),
       );
     }
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('友達追加'),
       ),
