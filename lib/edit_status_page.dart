@@ -56,6 +56,7 @@ class _EditStatusPageState extends State<EditStatusPage> {
     }
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('ステータスの編集'),
       ),

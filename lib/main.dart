@@ -29,8 +29,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      
-      title: 'StatusApp',
+      title: 'ヒマチェッカー', //タイトルをヒマチェッカーに変更
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -56,6 +55,7 @@ class HomePage extends StatelessWidget {
     }
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('ホーム'),
         actions: <Widget>[
@@ -113,6 +113,7 @@ class HomePage extends StatelessWidget {
                     Text(createTimeAgoString(status.timestamp)),
                     Switch(
                       value: status.isActive,
+                      activeColor: Colors.blue, // ここでスイッチの色を青色に設定します
                       onChanged: (value) async {
                         try {
                           await firestoreService.updateStatus(

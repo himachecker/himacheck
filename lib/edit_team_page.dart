@@ -15,6 +15,7 @@ class EditTeamPage extends StatelessWidget {
     final _teamNameController = TextEditingController(text: team.name);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('チーム編集'),
       ),

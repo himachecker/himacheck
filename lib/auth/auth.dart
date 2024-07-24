@@ -79,11 +79,17 @@ class _MyAuthPageState extends State<MyAuthPage> {
     final AuthService authService = AuthService();
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
         child: Container(
           padding: EdgeInsets.all(32),
           child: Column(
             children: <Widget>[
+              Image.asset(
+                'web/icons/cover.png', //アイコンのパス
+                height: 250,
+              ),
+              const SizedBox(height: 16), //アイコンとフォームの間隔を調整
               TextFormField(
                 decoration: InputDecoration(labelText: "ユーザー名"), // 追加: ユーザー名入力フィールド
                 onChanged: (String value) {
@@ -177,3 +183,4 @@ class _MyAuthPageState extends State<MyAuthPage> {
     );
   }
 }
+
