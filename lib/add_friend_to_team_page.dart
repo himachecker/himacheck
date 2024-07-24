@@ -13,7 +13,7 @@ class AddFriendToTeamPage extends StatelessWidget {
   AddFriendToTeamPage({required this.firestoreService, required this.userId, required this.team})
   {//erorrチェック
     print('UserId: $userId');
-    print('TeamId: ${team.id}');
+    print('TeamId: ${team.id}');//Teamidが正しく取得できていない
   }
 
   @override
@@ -22,8 +22,8 @@ class AddFriendToTeamPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('友達を追加'),
       ),
-      body: StreamBuilder<List<Friend>>(
-        stream: firestoreService.getUserFriends(userId), // 自分の友達リストを取得
+      body: StreamBuilder<List<String>>(
+        stream: firestoreService.getFriendIds(userId), // 自分の友達リストを取得
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -33,22 +33,47 @@ class AddFriendToTeamPage extends StatelessWidget {
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('No friends available'));
-          }
-          final friends = snapshot.data!;
+          }                    
+                    
+          final friendIds = snapshot.data!;
           return ListView.builder(
-            itemCount: friends.length,
+            shrinkWrap: true,
+            itemCount: friendIds.length,
             itemBuilder: (context, index) {
-              final friend = friends[index];
-              return ListTile(
-                title: Text(friend.name),
-                onTap: () {//userId, team.id, friend.idが空欄でないのが問題となっています。
-                  firestoreService.addFriendToTeam(userId, team.id, friend.id).then(
-                    (_) {
-                      Navigator.of(context).pop(); // チーム追加後にページを戻す
+              final friendId = friendIds[index];
+              print('FriendId: ${friendId}');//確認用
+              return FutureBuilder<Friend>(
+                future: firestoreService.getFriendById(friendId),
+                builder: (context, friendSnapshot) {
+                  if (friendSnapshot.connectionState == ConnectionState.waiting) {
+                    return ListTile(
+                      title: Text('Loading...'),
+                    );
+                  }
+                  if (friendSnapshot.hasError) {
+                    return ListTile(
+                      title: Text('Error loading friend'),
+                    );
+                  }
+                  final friend = friendSnapshot.data!;
+                      print('Friend ID from FutureBuilder: ${friend.id}');
+                      print('Friend Name from FutureBuilder: ${friend.name}');
+                  return ListTile(
+                    title: Text(friend.name),
+                  onTap: () {//userId, team.id, friend.idが空欄でないのが問題となっています。
+                        print('Adding friend to team...');
+                        print('User ID: $userId');
+                        print('Team ID: ${team.id}');
+                        print('Friend ID: ${friend.id}');
+                    firestoreService.addFriendToTeam(userId, team.id, friendId).then(
+                      (_) {
+                        Navigator.of(context).pop(); // チーム追加後にページを戻す
+                      },
+                    ).catchError((error) {
+                      print('Failed to add friend to team: $error');
+                      });
                     },
-                  ).catchError((error) {
-                    print('Failed to add friend to team: $error');
-                  });
+                  );
                 },
               );
             },

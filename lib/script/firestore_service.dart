@@ -45,8 +45,28 @@ class FirestoreService {
         .collection('friends')
         .snapshots()
         .map((snapshot) => snapshot.docs.map((doc) => doc.id).toList());
+
   }
- 
+  
+  
+  Future<Friend> getFriendById(String friendId) async {
+    // friendId に基づいて Statuses コレクションから情報を取得
+    final friendSnapshot = await _db
+        .collection('statuses')
+        .doc(friendId)
+        .get();
+
+    if (friendSnapshot.exists) {
+      final data = friendSnapshot.data()!;
+      return Friend(
+        id: friendId, // friendId を id に格納
+        name: data['name'] ?? '', // name を取得
+      );
+    } else {
+      throw Exception('Friend not found');
+    }
+  }
+
   Stream<List<Status>> getFriendsStatuses(String userId) {
     return _db
         .collection('users')
@@ -88,10 +108,30 @@ class FirestoreService {
         .doc(teamId)
         .collection('members')
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Friend.fromFirestore(doc.data() as Map<String, dynamic>))
-            .toList());
+        .asyncMap((snapshot) async {
+          if (snapshot.docs.isNotEmpty) {
+            // ドキュメント名をUIDリストとして取得
+            List<String> friendIds = snapshot.docs.map((doc) => doc.id).toList();
+
+            // UIDリストを使ってstatusesコレクションから情報を取得
+            QuerySnapshot statusSnapshot = await _db
+                .collection('statuses')
+                .where(FieldPath.documentId, whereIn: friendIds)
+                .get();
+
+            // 取得した情報をFriendオブジェクトに変換
+            return statusSnapshot.docs
+                .map((doc) => Friend(
+                      id: doc.id,
+                      name: doc['name'] ?? '', // nameを取得
+                    ))
+                .toList();
+          } else {
+            return [];
+          }
+        });
   }
+
 
   Stream<List<Friend>> getUserFriends(String uid) {
     return _db
@@ -105,9 +145,12 @@ class FirestoreService {
   }
 
   Future<void> createTeam(String uid, String teamName) async {
-    await _db.collection('users').doc(uid).collection('teams').doc().set({
-        'name': teamName,
-        'id': uid});
+    // Firestore が自動生成した ID を使用してチームを作成
+    DocumentReference teamRef = _db.collection('users').doc(uid).collection('teams').doc();
+    await teamRef.set({
+      'name': teamName,
+      'id': teamRef.id, // 自動生成されたチームID
+    });
   }
 
 
@@ -129,19 +172,14 @@ class FirestoreService {
         .delete();
   }
 
-  Future<void> addFriendToTeam(String uid, String teamId, String friendId) async {
-    if (uid.isEmpty || teamId.isEmpty || friendId.isEmpty) {
+  Future<void> addFriendToTeam(String userId, String teamId, String friendId) async {
+    if (userId.isEmpty || teamId.isEmpty || friendId.isEmpty) {
       throw ArgumentError('User ID, Team ID, and Friend ID must not be empty');
     }
 
-    final friendDoc = _db
-        .collection('users')
-        .doc(uid)
-        .collection('teams')
-        .doc(teamId)
-        .collection('members')
-        .doc(friendId);
-    await friendDoc.set({'id': friendId});
+    print('Attempting to add friend to team with: uid=$userId, teamId=$teamId, friendId=$friendId');
+
+    await _db.collection('users').doc(userId).collection('teams').doc(teamId).collection('members').doc(friendId).set({});
   }
 
   Future<void> removeFriendFromTeam(String uid, String teamId, String friendId) async {
