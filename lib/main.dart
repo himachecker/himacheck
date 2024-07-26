@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         textSelectionTheme: TextSelectionThemeData(
-          cursorColor: Colors.blue, // カーソルの色を紫に設定
+          cursorColor: Colors.blue, // カーソルの色を青に設定
         ),
       ),
       home: MyAuthPage(),
