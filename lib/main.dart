@@ -268,20 +268,49 @@ class TeamMembersTab extends StatelessWidget {
           return Center(child: Text('No members in this team'));
         }
         final friends = snapshot.data!;
- 
 
         return ListView.builder(
           itemCount: friends.length,
           itemBuilder: (context, index) {
             final friend = friends[index];
-            return ListTile(
-              title: Text(friend.name),
-              trailing: IconButton(
-                icon: Icon(Icons.remove_circle),
-                onPressed: () {
-                  firestoreService.removeFriendFromTeam(user.uid, team.id, friend.id);
-                },
-              ),
+            return StreamBuilder<Status?>(
+              stream: firestoreService.getUserStatus(friend.id),
+              builder: (context, statusSnapshot) {
+                if (statusSnapshot.connectionState == ConnectionState.waiting) {
+                  return ListTile(
+                    title: Text(friend.name),
+                    subtitle: Text('Loading status...'),
+                    trailing: CircularProgressIndicator(),
+                  );
+                }
+                if (statusSnapshot.hasError) {
+                  return ListTile(
+                    title: Text(friend.name),
+                    subtitle: Text('Error loading status'),
+                  );
+                }
+                if (!statusSnapshot.hasData || statusSnapshot.data == null) {
+                  return ListTile(
+                    title: Text(friend.name),
+                    subtitle: Text('No status available'),
+                  );
+                }
+                final status = statusSnapshot.data!;
+                return ListTile(
+                  title: Text(friend.name),
+                  subtitle: Text(status.message),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(createTimeAgoString(status.timestamp)),
+                      Icon(
+                        status.isActive ? Icons.check_circle : Icons.cancel,
+                        color: status.isActive ? Colors.green : Colors.red,
+                      ),
+                    ],
+                  ),
+                );
+              },
             );
           },
         );
