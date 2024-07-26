@@ -114,6 +114,7 @@ class _MyAuthPageState extends State<MyAuthPage> {
                   });
                 },
               ),
+              const SizedBox(height: 8),//ボタンと文字の間
               ElevatedButton(
                 onPressed: () async {
                   try {
@@ -128,6 +129,11 @@ class _MyAuthPageState extends State<MyAuthPage> {
                     });
                   }
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 51, 180, 240), // 水色
+                  foregroundColor: Colors.white, // テキストの色を白に
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                ),
                 child: Text("ユーザー登録"),
               ),
               const SizedBox(height: 32),
@@ -171,6 +177,11 @@ class _MyAuthPageState extends State<MyAuthPage> {
                     });
                   }
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 51, 180, 240), // 水色
+                  foregroundColor: Colors.white, // テキストの色を白に
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                ),
                 child: Text("ログイン"),
               ),
               const SizedBox(height: 8),
