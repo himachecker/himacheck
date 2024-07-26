@@ -90,7 +90,9 @@ class _MyAuthPageState extends State<MyAuthPage> {
               ),
               const SizedBox(height: 16), // アイコンとフォームの間隔を調整
               TextFormField(
-                decoration: InputDecoration(labelText: "ユーザー名"), // 追加: ユーザー名入力フィールド
+                decoration: InputDecoration(
+                  labelText: "ユーザー名",
+                  ), // 追加: ユーザー名入力フィールド
                 onChanged: (String value) {
                   setState(() {
                     newUserName = value;
@@ -98,7 +100,8 @@ class _MyAuthPageState extends State<MyAuthPage> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: "メールアドレス"),
+                decoration: InputDecoration(labelText: "メールアドレス",
+                ),
                 onChanged: (String value) {
                   setState(() {
                     newUserEmail = value;
@@ -130,8 +133,6 @@ class _MyAuthPageState extends State<MyAuthPage> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 51, 180, 240), // 水色
-                  foregroundColor: Colors.white, // テキストの色を白に
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 ),
                 child: Text("ユーザー登録"),
@@ -178,8 +179,6 @@ class _MyAuthPageState extends State<MyAuthPage> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 51, 180, 240), // 水色
-                  foregroundColor: Colors.white, // テキストの色を白に
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 ),
                 child: Text("ログイン"),
