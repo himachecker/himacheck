@@ -1,5 +1,3 @@
-// auth.dart
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../script/firestore_service.dart';
@@ -20,7 +18,7 @@ class AuthService {
     await _auth.signOut();
   }
 
-    Future<User?> signInWithEmailAndPassword(String email, String password) async {
+  Future<User?> signInWithEmailAndPassword(String email, String password) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
@@ -82,14 +80,15 @@ class _MyAuthPageState extends State<MyAuthPage> {
       backgroundColor: Colors.white,
       body: Center(
         child: Container(
+          width: 960, // 横幅を960pxに設定
           padding: EdgeInsets.all(32),
           child: Column(
             children: <Widget>[
               Image.asset(
-                'web/icons/cover.png', //アイコンのパス
+                'web/icons/cover.png', // アイコンのパス
                 height: 250,
               ),
-              const SizedBox(height: 16), //アイコンとフォームの間隔を調整
+              const SizedBox(height: 16), // アイコンとフォームの間隔を調整
               TextFormField(
                 decoration: InputDecoration(labelText: "ユーザー名"), // 追加: ユーザー名入力フィールド
                 onChanged: (String value) {
@@ -183,4 +182,3 @@ class _MyAuthPageState extends State<MyAuthPage> {
     );
   }
 }
-
