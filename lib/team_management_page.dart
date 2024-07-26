@@ -26,8 +26,11 @@ class _TeamManagementPageState extends State<TeamManagementPage> {
     }
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('チーム管理'),
+        backgroundColor: const Color.fromARGB(255, 51, 180, 240), // バナーの背景色を水色に設定
+        foregroundColor: Colors.white, // アイコンとテキストの色を白に設定
         actions: [
           IconButton(
             icon: Icon(Icons.add),

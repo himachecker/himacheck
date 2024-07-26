@@ -59,6 +59,8 @@ class _EditStatusPageState extends State<EditStatusPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('ステータスの編集'),
+        backgroundColor: const Color.fromARGB(255, 51, 180, 240), // バナーの背景色を水色に設定
+        foregroundColor: Colors.white, // アイコンとテキストの色を白に設定
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

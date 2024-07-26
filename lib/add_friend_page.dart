@@ -30,6 +30,8 @@ class _AddFriendPageState extends State<AddFriendPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('友達追加'),
+        backgroundColor: const Color.fromARGB(255, 51, 180, 240), // バナーの背景色を水色に設定
+        foregroundColor: Colors.white, // アイコンとテキストの色を白に設定
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
