@@ -32,6 +32,31 @@ class MyApp extends StatelessWidget {
       title: 'ヒマチェッカー', //タイトルをヒマチェッカーに変更
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        inputDecorationTheme: InputDecorationTheme(
+          labelStyle: TextStyle(color: Colors.grey), // ラベルの色を灰色に設定
+          hintStyle: TextStyle(color: Colors.grey),  // ヒントテキストの色も灰色に設定
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue), // フォーカス時の下線の色
+          ),
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey), // 通常時の下線の色
+          ),
+          errorBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.red), // エラー時の下線の色
+          ),
+          focusedErrorBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.red), // フォーカス時のエラー下線の色
+          ),    
+        ),
+                elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color.fromARGB(255, 51, 180, 240), // ElevatedButtonの背景色
+            foregroundColor: Colors.white, // ElevatedButtonのテキスト色
+          ),
+        ),
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: Colors.blue, // カーソルの色を青に設定
+        ),
       ),
       home: MyAuthPage(),
     );
