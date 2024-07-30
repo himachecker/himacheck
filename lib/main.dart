@@ -28,6 +28,31 @@ class MyApp extends StatelessWidget {
       title: 'ヒマチェッカー',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        inputDecorationTheme: InputDecorationTheme(
+          labelStyle: TextStyle(color: Colors.grey), // ラベルの色を灰色に設定
+          hintStyle: TextStyle(color: Colors.grey),  // ヒントテキストの色も灰色に設定
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue), // フォーカス時の下線の色
+          ),
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey), // 通常時の下線の色
+          ),
+          errorBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.red), // エラー時の下線の色
+          ),
+          focusedErrorBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.red), // フォーカス時のエラー下線の色
+          ),    
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color.fromARGB(255, 51, 180, 240), // ElevatedButtonの背景色
+            foregroundColor: Colors.white, // ElevatedButtonのテキスト色
+          ),
+        ),
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: Colors.blue, // カーソルの色を青に設定
+        ),
       ),
       home: MyAuthPage(),
     );
@@ -38,16 +63,13 @@ class HomePage extends StatelessWidget {
   final FirestoreService firestoreService = FirestoreService();
   final AuthService authService = AuthService();
 
-
-
-
   @override
   Widget build(BuildContext context) {
     final user = authService.getCurrentUser();
 
     if (user == null) {
       return Scaffold(
-        body: Center(child: Text('User not logged in')),
+        body: Center(child: Text('ユーザーがログインしていません')),
       );
     }
 
@@ -58,10 +80,10 @@ class HomePage extends StatelessWidget {
           return Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(child: Text('エラー: ${snapshot.error}'));
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('No teams found'));
+          return Center(child: Text('チームが見つかりません'));
         }
         final teams = snapshot.data!;
         return DefaultTabController(
@@ -107,74 +129,81 @@ class HomePage extends StatelessWidget {
                 ],
               ),
             ),
-            body: Column(
-              children: [
-                // 自身のステータス表示
-                StreamBuilder<Status?>(
-                  stream: firestoreService.getUserStatus(user.uid),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                    if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    }
-                    if (!snapshot.hasData || snapshot.data == null) {
-                      return Center(child: Text('No status available'));
-                    }
-                    final status = snapshot.data!;
-                    return ListTile(
-                      title: Text(status.name),
-                      subtitle: Text(status.message),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
+            body: Center(
+              child: Container(
+                width: 960, // 横幅を960pxに設定
+                padding: EdgeInsets.all(16.0), // 追加のパディング
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 自身のステータス表示
+                    StreamBuilder<Status?>(
+                      stream: firestoreService.getUserStatus(user.uid),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                        if (snapshot.hasError) {
+                          return Center(child: Text('エラー: ${snapshot.error}'));
+                        }
+                        if (!snapshot.hasData || snapshot.data == null) {
+                          return Center(child: Text('ステータスが利用できません'));
+                        }
+                        final status = snapshot.data!;
+                        return ListTile(
+                          title: Text(status.name),
+                          subtitle: Text(status.message),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(createTimeAgoString(status.timestamp)),
+                              Switch(
+                                value: status.isActive,
+                                activeColor: Colors.blue,
+                                onChanged: (value) async {
+                                  try {
+                                    await firestoreService.updateStatus(
+                                      user.uid,
+                                      value,
+                                      status.message,
+                                      status.name,
+                                      status.timestamp,
+                                    );
+                                  } catch (e) {
+                                    print('ステータスの更新中にエラーが発生しました: $e');
+                                  }
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.edit),
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => EditStatusPage(
+                                      documentId: status.id,
+                                      currentMessage: status.message,
+                                      currentStatus: status.isActive,
+                                      currentname: status.name,
+                                      currenttimestamp: status.timestamp,
+                                    ),
+                                  ));
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                    Expanded(
+                      child: TabBarView(
                         children: [
-                          Text(createTimeAgoString(status.timestamp)),
-                          Switch(
-                            value: status.isActive,
-                            activeColor: Colors.blue,
-                            onChanged: (value) async {
-                              try {
-                                await firestoreService.updateStatus(
-                                  user.uid,
-                                  value,
-                                  status.message,
-                                  status.name,
-                                  status.timestamp,
-                                );
-                              } catch (e) {
-                                print('Error updating status: $e');
-                              }
-                            },
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => EditStatusPage(
-                                  documentId: status.id,
-                                  currentMessage: status.message,
-                                  currentStatus: status.isActive,
-                                  currentname: status.name,
-                                  currenttimestamp: status.timestamp,
-                                ),
-                              ));
-                            },
-                          ),
+                          AllFriendsTab(),
+                          ...teams.map((team) => TeamMembersTab(team: team)).toList(),
                         ],
                       ),
-                    );
-                  },
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      AllFriendsTab(),
-                      ...teams.map((team) => TeamMembersTab(team: team)).toList(),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         );
@@ -191,7 +220,7 @@ class AllFriendsTab extends StatelessWidget {
     final user = authService.getCurrentUser();
 
     if (user == null) {
-      return Center(child: Text('User not logged in'));
+      return Center(child: Text('ユーザーがログインしていません'));
     }
 
     return StreamBuilder<List<Status>>(
@@ -201,10 +230,10 @@ class AllFriendsTab extends StatelessWidget {
           return Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(child: Text('エラー: ${snapshot.error}'));
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('No friends statuses available'));
+          return Center(child: Text('友達のステータスが利用できません'));
         }
         final statuses = snapshot.data!;
 
@@ -252,7 +281,7 @@ class TeamMembersTab extends StatelessWidget {
     final user = authService.getCurrentUser();
 
     if (user == null) {
-      return Center(child: Text('User not logged in'));
+      return Center(child: Text('ユーザーがログインしていません'));
     }
 
     return StreamBuilder<List<Friend>>(
@@ -262,10 +291,10 @@ class TeamMembersTab extends StatelessWidget {
           return Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(child: Text('エラー: ${snapshot.error}'));
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('No members in this team'));
+          return Center(child: Text('このチームにはメンバーがいません'));
         }
         final friends = snapshot.data!;
 
@@ -279,20 +308,20 @@ class TeamMembersTab extends StatelessWidget {
                 if (statusSnapshot.connectionState == ConnectionState.waiting) {
                   return ListTile(
                     title: Text(friend.name),
-                    subtitle: Text('Loading status...'),
+                    subtitle: Text('ステータスを読み込み中...'),
                     trailing: CircularProgressIndicator(),
                   );
                 }
                 if (statusSnapshot.hasError) {
                   return ListTile(
                     title: Text(friend.name),
-                    subtitle: Text('Error loading status'),
+                    subtitle: Text('ステータスの読み込み中にエラーが発生しました'),
                   );
                 }
                 if (!statusSnapshot.hasData || statusSnapshot.data == null) {
                   return ListTile(
                     title: Text(friend.name),
-                    subtitle: Text('No status available'),
+                    subtitle: Text('ステータスが利用できません'),
                   );
                 }
                 final status = statusSnapshot.data!;
