@@ -1,5 +1,6 @@
 # himacheck
 
-A new Flutter project.
+発表用です。
+コードかなり汚いです。いつか直します。
 
 
