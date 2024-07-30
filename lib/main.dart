@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:himacheck/edit_status_page.dart';
 import 'package:himacheck/auth/auth.dart';
 import 'package:himacheck/script/timeago.dart';
@@ -123,6 +125,7 @@ class HomePage extends StatelessWidget {
             appBar: AppBar(
               title: Text('ホーム'),
               actions: <Widget>[
+                UserUIDDisplay(), // ここでUID表示ウィジェットを追加
                 IconButton(
                   icon: Icon(Icons.close),
                   onPressed: () async {
@@ -182,28 +185,28 @@ class HomePage extends StatelessWidget {
                         final status = snapshot.data!;
                         return ListTile(
                           title: Text(status.name),
-                          subtitle: Text(status.message),
+                          subtitle: Text(status.message, ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(createTimeAgoString(status.timestamp)),
-                              Switch(
-                                value: status.isActive,
-                                activeColor: Colors.blue,
-                                onChanged: (value) async {
-                                  try {
-                                    await firestoreService.updateStatus(
-                                      user.uid,
-                                      value,
-                                      status.message,
-                                      status.name,
-                                      status.timestamp,
-                                    );
-                                  } catch (e) {
-                                    print('ステータスの更新中にエラーが発生しました: $e');
-                                  }
-                                },
-                              ),
+                              // Switch(
+                              //   value: status.isActive,
+                              //   activeColor: Colors.blue,
+                              //   onChanged: (value) async {
+                              //     try {
+                              //       await firestoreService.updateStatus(
+                              //         user.uid,
+                              //         value,
+                              //         status.message,
+                              //         status.name,
+                              //         status.timestamp,
+                              //       );
+                              //     } catch (e) {
+                              //       print('ステータスの更新中にエラーが発生しました: $e');
+                              //     }
+                              //   },
+                              // ),
                               IconButton(
                                 icon: Icon(Icons.edit),
                                 onPressed: () {
@@ -239,6 +242,32 @@ class HomePage extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+
+class UserUIDDisplay extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
+    return user == null
+        ? CircularProgressIndicator()
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 3),
+              ElevatedButton(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: user.uid));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('UIDをクリップボードにコピーしました')),
+                  );
+                },
+                child: Text('UIDをコピー'),
+              ),
+            ],
+          );
   }
 }
 
