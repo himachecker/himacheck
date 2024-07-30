@@ -101,6 +101,7 @@ class _EditStatusPageState extends State<EditStatusPage> {
             SwitchListTile(
               title: Text('アクティブ'),
               value: isActive,
+              activeColor: Colors.blue,
               onChanged: (value) {
                 setState(() {
                   isActive = value;

@@ -82,6 +82,7 @@ class _MyAuthPageState extends State<MyAuthPage> {
       backgroundColor: Colors.white,
       body: Center(
         child: Container(
+          width: 960, // 横幅を960pxに設定
           padding: EdgeInsets.all(32),
           child: Column(
             children: <Widget>[
@@ -115,6 +116,7 @@ class _MyAuthPageState extends State<MyAuthPage> {
                   });
                 },
               ),
+              const SizedBox(height: 8),
               ElevatedButton(
                 onPressed: () async {
                   try {
