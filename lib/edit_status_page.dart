@@ -45,6 +45,36 @@ class _EditStatusPageState extends State<EditStatusPage> {
     super.dispose();
   }
 
+  Future<void> _updateStatus() async {
+    try {
+      await firestoreService.updateStatus(
+        authService.getCurrentUser()!.uid,
+        isActive,
+        messageController.text,
+        widget.currentname,
+        timestamp,
+      );
+      Navigator.of(context).pop(); // 戻る
+    } catch (e) {
+      // エラーダイアログを表示
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('エラー'),
+          content: Text('ステータスの更新中にエラーが発生しました: $e'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = authService.getCurrentUser();
@@ -67,11 +97,6 @@ class _EditStatusPageState extends State<EditStatusPage> {
             TextField(
               controller: messageController,
               decoration: InputDecoration(labelText: 'メッセージ'),
-              onChanged: (value) {
-                setState(() {
-                  // Controllerが入力を管理しているので、この部分は不要かもしれません。
-                });
-              },
             ),
             SwitchListTile(
               title: Text('アクティブ'),
@@ -84,20 +109,7 @@ class _EditStatusPageState extends State<EditStatusPage> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () async {
-                try {
-                  await firestoreService.updateStatus(
-                    user.uid,
-                    isActive,
-                    messageController.text,
-                    widget.currentname,
-                    timestamp
-                  );
-                  Navigator.of(context).pop();
-                } catch (e) {
-                  print('Error updating status: $e');
-                }
-              },
+              onPressed: _updateStatus,
               child: Text('更新'),
             ),
           ],
