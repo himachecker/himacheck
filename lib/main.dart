@@ -46,12 +46,42 @@ class MyApp extends StatelessWidget {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Color.fromARGB(255, 51, 180, 240), // ElevatedButtonの背景色
-            foregroundColor: Colors.white, // ElevatedButtonのテキスト色
+            backgroundColor: Color.fromARGB(255, 51, 180, 240), // アクティブな時の背景色
+            foregroundColor: Colors.white, // アクティブな時の文字色
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            backgroundColor: Color.fromARGB(255, 51, 180, 240), 
+            foregroundColor: Colors.white,// TextButtonの文字色
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            backgroundColor: Colors.transparent, // OutlinedButtonの背景色（透明にする）
+            foregroundColor: Color.fromARGB(255, 51, 180, 240), // OutlinedButtonの文字色
+            side: BorderSide(color: Color.fromARGB(255, 51, 180, 240)), // OutlinedButtonのボーダー色
           ),
         ),
         textSelectionTheme: TextSelectionThemeData(
           cursorColor: Colors.blue, // カーソルの色を青に設定
+        ),
+        scaffoldBackgroundColor: Colors.white, // 背景色を白に設定
+        appBarTheme: AppBarTheme(
+          backgroundColor: Color.fromARGB(255, 51, 180, 240), // AppBarの背景色を水色に設定
+          foregroundColor: Colors.white, // AppBarのアイコンとテキストの色を白に設定
+        ),
+         tabBarTheme: TabBarTheme(
+          labelColor: Colors.white, // タブバー上の選択されたタブの文字色
+          unselectedLabelColor: Colors.white70, // タブバー上の未選択のタブの文字色
+          indicator: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.white, // タブバーのアンダーバーの色
+                width: 2.0, // アンダーバーの太さ
+              ),
+            ),
+          ),
         ),
       ),
       home: MyAuthPage(),
