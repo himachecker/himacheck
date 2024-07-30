@@ -4,7 +4,7 @@ import 'package:himacheck/edit_status_page.dart';
 import 'package:himacheck/auth/auth.dart';
 import 'package:himacheck/script/timeago.dart';
 import 'package:himacheck/team_management_page.dart';
-import 'script/firebase_options.dart';
+import 'firebase_options.dart';
 import 'models/status.dart';
 import 'script/firestore_service.dart';
 import 'package:himacheck/add_friend_page.dart';
