@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/status.dart';
 
+
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
@@ -16,13 +17,15 @@ class FirestoreService {
     });
   }
 
-  Future<void> updateStatus(String uid, bool isActive, String message, String name, DateTime timestamp) async {
+  Future<void> updateStatus(String uid, bool isActive, String message, String name, DateTime timestamp
+) async {
     await _db.collection('statuses').doc(uid).update({
       'isActive': isActive,
       'message': message,
       'name': name,
       'timestamp': DateTime.now(), // タイムスタンプを現在の日時で更新
     });
+    
   }
 
   Future<void> addStatus(String message, bool isActive, String name, DateTime timestamp, String uid) async {
@@ -88,8 +91,12 @@ class FirestoreService {
           }
         });
   }
+
+  
+
+
     Stream<List<Team>> getUserTeams(String uid) {
-    return _db
+      return _db
         .collection('users')
         .doc(uid)
         .collection('teams')
@@ -99,6 +106,20 @@ class FirestoreService {
             .toList());
   }
 
+  Future<Status?> getStatusForFriend(String friendId) async {
+    var statusSnapshot = await _db.collection('statuses').doc(friendId).get();
+    var statusData = statusSnapshot.data() as Map<String, dynamic>?;
+    if (statusData != null) {
+      return Status(
+        id: friendId,
+        name: statusData['name'] ?? '',
+        message: statusData['message'] ?? '',
+        timestamp: statusData['timestamp']?.toDate() ?? DateTime.now(),
+        isActive: statusData['isActive'] ?? false,
+      );
+    }
+    return null;
+  }
 
   Stream<List<Friend>> getTeamMembers(String uid, String teamId) {
     return _db
@@ -192,6 +213,8 @@ class FirestoreService {
         .doc(friendId)
         .delete();
   }
+
+  
+
+
 }
-
-
