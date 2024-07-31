@@ -114,9 +114,6 @@ class HomePage extends StatelessWidget {
         if (snapshot.hasError) {
           return Center(child: Text('エラー: ${snapshot.error}'));
         }
-        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('チームが見つかりません'));
-        }
         final teams = snapshot.data!;
         return DefaultTabController(
           length: teams.length + 1, // タブの数を増やす
